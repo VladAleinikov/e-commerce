@@ -8,6 +8,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -16,6 +19,8 @@ const formSchema = z.object({
 export const StoreModal = () => {
   const { isOpen, onClose } = useStoreModal();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -23,7 +28,20 @@ export const StoreModal = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {};
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setIsLoading(true);
+
+      const response = await axios.post('/api/stores', values);
+
+      toast.success("Магазин создан");
+    } catch (error) {
+      toast.error("Что-то пошло не так");
+    }
+    finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Modal
@@ -43,7 +61,11 @@ export const StoreModal = () => {
                   <FormItem>
                     <FormLabel>Название</FormLabel>
                     <FormControl>
-                      <Input placeholder="E-Commerce" {...field} />
+                      <Input
+                        disabled={isLoading}
+                        placeholder="E-Commerce"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -51,12 +73,14 @@ export const StoreModal = () => {
               />
               <div className="pt-6 space-x-2 flex items-center justify-end w-full">
                 <Button
+                  disabled={isLoading}
                   variant="outline"
                   onClick={onClose}
                 >
                   Отмена
                 </Button>
                 <Button
+                  disabled={isLoading}
                   type="submit"
                 >
                   Продолжить
