@@ -3,7 +3,7 @@
 import { useStoreModal } from "@/hooks/use-store-modal";
 import { useEffect } from "react";
 
-export default function Home() {
+export default function SetupPage() {
   const { onOpen, isOpen } = useStoreModal();
 
   useEffect(() => {
@@ -12,5 +12,5 @@ export default function Home() {
     }
   }, [isOpen, onOpen]);
 
-  return <div className="p-4"></div>;
+  return null;
 }
