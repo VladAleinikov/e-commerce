@@ -20,6 +20,11 @@ export const MainNav = () => {
       label: "Настройки",
       active: pathname === `/${params.storeId}/settings`,
     },
+    {
+      href: `/${params.storeId}/billboards`,
+      label: "Баннеры",
+      active: pathname === `/${params.storeId}/billboards`,
+    },
   ];
   return (
     <nav className="flex items-center space-x-4 lg:space-x-6 mx-6">

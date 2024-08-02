@@ -23,7 +23,7 @@ export const AlertModal = ({
     setIsMounted(true);
   }, []);
 
-  if (isMounted) {
+  if (!isMounted) {
     return null;
   }
 

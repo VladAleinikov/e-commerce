@@ -1,6 +1,7 @@
 "use client";
 
 import { StoreModal } from "@/components/modals/store-modal";
+import { UploadImageModal } from "@/components/modals/upload-image-modal";
 import { useEffect, useState } from "react";
 
 export const ModalProvider = () => {
@@ -17,6 +18,7 @@ export const ModalProvider = () => {
   return (
     <>
       <StoreModal />
+      <UploadImageModal />
     </>
   );
 };

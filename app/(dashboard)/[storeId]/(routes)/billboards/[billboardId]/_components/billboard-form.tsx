@@ -12,11 +12,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Heading } from "@/components/ui/heading";
+import { ImageUpload } from "@/components/ui/image-upload";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useOrigin } from "@/hooks/use-origin";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Store } from "@prisma/client";
+import { Billboard } from "@prisma/client";
 import axios from "axios";
 import { Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -25,28 +26,40 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-interface SettingsFormProps {
-  initialData: Store;
+interface BillboardFormProps {
+  initialData: Billboard | null;
 }
 const formSchema = z.object({
-  name: z.string().min(1),
+  label: z.string().min(1),
+  imageUrl: z.string().min(1),
 });
 
-type SettingsFormValues = z.infer<typeof formSchema>;
+type BillboardFormValues = z.infer<typeof formSchema>;
 
-export const SettingsForm = ({ initialData }: SettingsFormProps) => {
+export const BillboardForm = ({ initialData }: BillboardFormProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
   const origin = useOrigin();
   const params = useParams();
   const router = useRouter();
 
-  const form = useForm<SettingsFormValues>({
+  const title = initialData ? "Изменить баннер" : "Создать баннер";
+  const description = initialData
+    ? "Изменить этот баннер"
+    : "Добавить новый баннер";
+  const toastMessage = initialData ? "Баннер обновлен." : "Баннер добавлен.";
+  const action = initialData ? "Сохранить изменения" : "Добавить";
+
+  const form = useForm<BillboardFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: initialData || {
+      label: "",
+      imageUrl: "",
+    },
   });
 
-  const onSubmit = async (data: SettingsFormValues) => {
+  const onSubmit = async (data: BillboardFormValues) => {
     try {
       setIsLoading(true);
 
@@ -84,10 +97,7 @@ export const SettingsForm = ({ initialData }: SettingsFormProps) => {
         isLoading={isLoading}
       />
       <div className="flex items-center justify-between">
-        <Heading
-          title="Настройки"
-          description="Управляйте настройками магазина"
-        />
+        <Heading title={title} description={description} />
         <Button
           disabled={isLoading}
           variant="destructive"
@@ -103,17 +113,41 @@ export const SettingsForm = ({ initialData }: SettingsFormProps) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
+          <FormField
+            control={form.control}
+            name="imageUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Фоновое изображение</FormLabel>
+                <FormControl>
+                  <ImageUpload
+                    value={
+                      field.value
+                        ? [field.value]
+                        : [
+                            "https://files.edgestore.dev/cifioyac05to9e9g/publicFiles/_public/d9b087ba-c23f-439f-a52a-bb04ef298c85.jpg",
+                          ]
+                    }
+                    isDisabled={isLoading}
+                    onChange={(url) => field.onChange(url)}
+                    onRemove={() => field.onChange("")}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="grid grid-cols-3 gap-8">
             <FormField
               control={form.control}
-              name="name"
+              name="label"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Название</FormLabel>
+                  <FormLabel>Заголовок</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isLoading}
-                      placeholder="Название магазина"
+                      placeholder="Заголовок баннера"
                       {...field}
                     />
                   </FormControl>
@@ -122,17 +156,12 @@ export const SettingsForm = ({ initialData }: SettingsFormProps) => {
               )}
             />
           </div>
-          <Button disabled={isLoading} type="submit">
-            Сохранить изменения
+          <Button disabled={isLoading} type="submit" className="ml-auto">
+            {action}
           </Button>
         </form>
       </Form>
       <Separator />
-      <ApiAlert
-        title="NEXT_PUBLIC_API_URL"
-        description={`${origin}/api/${params.storeId}`}
-        variant="public"
-      />
     </>
   );
 };
