@@ -62,10 +62,17 @@ export const BillboardForm = ({ initialData }: BillboardFormProps) => {
   const onSubmit = async (data: BillboardFormValues) => {
     try {
       setIsLoading(true);
-
-      await axios.patch(`/api/stores/${params.storeId}`, data);
+      if (initialData) {
+        await axios.patch(
+          `/api/${params.storeId}/billboards/${params.billboardId}`,
+          data
+        );
+      } else {
+        await axios.post(`/api/${params.storeId}/billboards`, data);
+      }
       router.refresh();
-      toast.success("Данные магазина обновлены.");
+      router.push(`/${params.storeId}/billboards`);
+      toast.success(toastMessage);
     } catch (error) {
       toast.error("Что-то пошло не так.");
     } finally {
@@ -76,12 +83,14 @@ export const BillboardForm = ({ initialData }: BillboardFormProps) => {
   const onDelete = async () => {
     try {
       setIsLoading(true);
-      await axios.delete(`/api/stores/${params.storeId}`);
+      await axios.delete(
+        `/api/${params.storeId}/billboards/${params.billboardId}`
+      );
       router.refresh();
       router.push("/");
-      toast.success("Магазин удален.");
+      toast.success("Баннер удален.");
     } catch (error) {
-      toast.error("Убедитесь что вы удалили все товары и категории.");
+      toast.error("Убедитесь что вы удалили все категории использующие этот баннер.");
     } finally {
       setIsLoading(false);
       setIsOpen(false);
@@ -118,18 +127,15 @@ export const BillboardForm = ({ initialData }: BillboardFormProps) => {
             name="imageUrl"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Фоновое изображение</FormLabel>
+                <FormLabel>Баннер</FormLabel>
                 <FormControl>
                   <ImageUpload
-                    value={
-                      field.value
-                        ? [field.value]
-                        : [
-                            "https://files.edgestore.dev/cifioyac05to9e9g/publicFiles/_public/d9b087ba-c23f-439f-a52a-bb04ef298c85.jpg",
-                          ]
-                    }
+                    value={field.value ? [field.value] : []}
                     isDisabled={isLoading}
-                    onChange={(url) => field.onChange(url)}
+                    onChange={(url) => {
+                      console.log(url);
+                      field.onChange(url);
+                    }}
                     onRemove={() => field.onChange("")}
                   />
                 </FormControl>

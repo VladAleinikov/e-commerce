@@ -26,11 +26,10 @@ export const UploadImageModal = () => {
       setFile(file);
 
       let res = await edgestore.publicFiles.upload({
-        file
+        file,
       });
 
       onChangeImg(res.url);
-      
       onClose();
     }
   };
@@ -45,6 +44,7 @@ export const UploadImageModal = () => {
             disabled={isSubmiting}
             value={file}
             onChange={onChange}
+            height={200}
           />
         </DialogHeader>
       </DialogContent>
