@@ -106,14 +106,16 @@ export const BillboardForm = ({ initialData }: BillboardFormProps) => {
       />
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
-        <Button
-          disabled={isLoading}
-          variant="destructive"
-          size="sm"
-          onClick={() => setIsOpen(true)}
-        >
-          <Trash className="h-4 w-4" />
-        </Button>
+        {initialData && (
+          <Button
+            disabled={isLoading}
+            variant="destructive"
+            size="sm"
+            onClick={() => setIsOpen(true)}
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       <Separator />
       <Form {...form}>
