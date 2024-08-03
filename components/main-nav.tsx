@@ -16,14 +16,14 @@ export const MainNav = () => {
       active: pathname === `/${params.storeId}`,
     },
     {
-      href: `/${params.storeId}/settings`,
-      label: "Настройки",
-      active: pathname === `/${params.storeId}/settings`,
-    },
-    {
       href: `/${params.storeId}/billboards`,
       label: "Баннеры",
       active: pathname === `/${params.storeId}/billboards`,
+    },
+    {
+      href: `/${params.storeId}/settings`,
+      label: "Настройки",
+      active: pathname === `/${params.storeId}/settings`,
     },
   ];
   return (

@@ -2,7 +2,10 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export async function GET({ params }: { params: { billboardId: string } }) {
+export async function GET(
+  req: Request,
+  { params }: { params: { billboardId: string } }
+) {
   try {
     if (!params.billboardId) {
       return new NextResponse("Billboard id is required", { status: 400 });
@@ -77,6 +80,7 @@ export async function PATCH(
 }
 
 export async function DELETE(
+  req: Request,
   { params }: { params: { storeId: string; billboardId: string } }
 ) {
   try {
