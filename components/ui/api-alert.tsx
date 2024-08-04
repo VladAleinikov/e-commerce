@@ -1,10 +1,11 @@
 "use client"
 
-import { Copy, Server } from "lucide-react";
+import { Check, Copy, Server } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
 import { Badge, BadgeProps } from "./badge";
 import { Button } from "./button";
 import { toast } from "sonner";
+import { useState } from "react";
 
 interface ApiAlertProps {
   title: string;
@@ -22,10 +23,15 @@ const variantMap: Record<ApiAlertProps["variant"], BadgeProps["variant"]> = {
 };
 
 export const ApiAlert = ({ title, description, variant }: ApiAlertProps) => {
+  const [isCopied, setIsCopied] = useState(false);
 
   const onCopy = () => {
     navigator.clipboard.writeText(description);
     toast.success("Путь скопирован в буфер обмена");
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 3000);
   }
 
   return (
@@ -40,7 +46,11 @@ export const ApiAlert = ({ title, description, variant }: ApiAlertProps) => {
           {description}
         </code>
         <Button variant="outline" size="sm" onClick={onCopy}>
-          <Copy className="h-4 w-4" />
+          {isCopied ? (
+            <Check className="h-4 w-4"/>
+          ) : (
+            <Copy className="h-4 w-4" />
+          )}
         </Button>
       </AlertDescription>
     </Alert>

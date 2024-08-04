@@ -14,7 +14,8 @@ import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Size } from "@prisma/client";
+import { Color } from "@prisma/client";
+import ColorPicker from "@rc-component/color-picker";
 import axios from "axios";
 import { Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -22,32 +23,35 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import "@rc-component/color-picker/assets/index.css";
 
-interface SizeFormProps {
-  initialData: Size | null;
+interface ColorFormProps {
+  initialData: Color | null;
 }
 const formSchema = z.object({
   name: z.string().min(1),
-  value: z.string().min(1),
+  value: z.string().min(4).regex(/^#/, {
+    message: "Цвет должен соответствовать hex коду",
+  }),
 });
 
-type SizeFormValues = z.infer<typeof formSchema>;
+type ColorFormValues = z.infer<typeof formSchema>;
 
-export const SizeForm = ({ initialData }: SizeFormProps) => {
+export const ColorForm = ({ initialData }: ColorFormProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const params = useParams();
   const router = useRouter();
 
-  const title = initialData ? "Изменить размер" : "Создать новый размер";
+  const title = initialData ? "Изменить цвет" : "Создать новый цвет";
   const description = initialData
-    ? "Изменить этот размер"
-    : "Добавить новый размер";
-  const toastMessage = initialData ? "Размер обновлен." : "Размер добавлен.";
+    ? "Изменить этот цвет"
+    : "Добавить новый цвет";
+  const toastMessage = initialData ? "Цвет обновлен." : "Цвет добавлен.";
   const action = initialData ? "Сохранить изменения" : "Добавить";
 
-  const form = useForm<SizeFormValues>({
+  const form = useForm<ColorFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       name: "",
@@ -55,19 +59,19 @@ export const SizeForm = ({ initialData }: SizeFormProps) => {
     },
   });
 
-  const onSubmit = async (data: SizeFormValues) => {
+  const onSubmit = async (data: ColorFormValues) => {
     try {
       setIsLoading(true);
       if (initialData) {
         await axios.patch(
-          `/api/${params.storeId}/sizes/${params.sizeId}`,
+          `/api/${params.storeId}/colors/${params.colorId}`,
           data
         );
       } else {
-        await axios.post(`/api/${params.storeId}/sizes`, data);
+        await axios.post(`/api/${params.storeId}/colors`, data);
       }
       router.refresh();
-      router.push(`/${params.storeId}/sizes`);
+      router.push(`/${params.storeId}/colors`);
       toast.success(toastMessage);
     } catch (error) {
       toast.error("Что-то пошло не так.");
@@ -79,12 +83,14 @@ export const SizeForm = ({ initialData }: SizeFormProps) => {
   const onDelete = async () => {
     try {
       setIsLoading(true);
-      await axios.delete(`/api/${params.storeId}/sizes/${params.sizeId}`);
+      await axios.delete(`/api/${params.storeId}/colors/${params.colorId}`);
       router.refresh();
-      router.push(`/${params.storeId}/sizes`);
+      router.push(`/${params.storeId}/colors`);
       toast.success("Размер удален.");
     } catch (error) {
-      toast.error("Убедитесь что вы удалили все продукты использующие этот размер.");
+      toast.error(
+        "Убедитесь что вы удалили все продукты использующие этот цвет."
+      );
     } finally {
       setIsLoading(false);
       setIsOpen(false);
@@ -128,7 +134,7 @@ export const SizeForm = ({ initialData }: SizeFormProps) => {
                   <FormControl>
                     <Input
                       disabled={isLoading}
-                      placeholder="Название размера"
+                      placeholder="Название цвета"
                       {...field}
                     />
                   </FormControl>
@@ -143,10 +149,10 @@ export const SizeForm = ({ initialData }: SizeFormProps) => {
                 <FormItem>
                   <FormLabel>Значение</FormLabel>
                   <FormControl>
-                    <Input
+                    <ColorPicker
                       disabled={isLoading}
-                      placeholder="Значение размера"
                       {...field}
+                      onChange={(value) => field.onChange(value.toHexString())}
                     />
                   </FormControl>
                   <FormMessage />
