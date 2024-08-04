@@ -1,5 +1,5 @@
 import prismadb from "@/lib/prismadb";
-import { CategoryForm } from "./_components/billboard-form";
+import { CategoryForm } from "./_components/category-form";
 
 interface CategoryPageProps {
   params: { categoryId: string, storeId: string };
