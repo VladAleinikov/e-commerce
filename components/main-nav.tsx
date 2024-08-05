@@ -36,6 +36,11 @@ export const MainNav = () => {
       active: pathname === `/${params.storeId}/colors`,
     },
     {
+      href: `/${params.storeId}/products`,
+      label: "Продукты",
+      active: pathname === `/${params.storeId}/products`,
+    },
+    {
       href: `/${params.storeId}/settings`,
       label: "Настройки",
       active: pathname === `/${params.storeId}/settings`,
