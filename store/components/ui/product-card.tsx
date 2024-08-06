@@ -5,25 +5,21 @@ import Image from "next/image";
 import { IconButton } from "./icon-button";
 import { Expand, ShoppingCart } from "lucide-react";
 import { Currency } from "./currency";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
   data: IProduct;
 }
 
 export const ProductCard = ({ data }: ProductCardProps) => {
-  const [isMounted, setIsMounted] = useState(false);
+  const router = useRouter();
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
+  const onClick = () => {
+    router.push(`/product/${data.id}`);
   }
   
   return (
-    <div className="bg-white group cursor-pointer rounded-xl border p-3 space-y-4">
+    <div onClick={onClick} className="bg-white group cursor-pointer rounded-xl border p-3 space-y-4">
       <div className="aspect-square rounded-xl bg-gray-100 relative">
         <Image
           alt="Image"
